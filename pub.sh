@@ -6,7 +6,6 @@ hub=sbox-iot
 device=wsl2
 
 mosquitto_pub -d -q 1 \
-  --capath /etc/ssl/certs/ \
   -V mqttv311 \
   -p 8883 \
   -h ${hub}.azure-devices.net \
