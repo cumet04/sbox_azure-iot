@@ -8,19 +8,24 @@ import (
 )
 
 func main() {
+	sas := "SharedAccessSignature..."
+	hub := "sbox-iot"
+	device := "wsl2"
+
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker("tcp://localhost:1883")
+	opts.SetProtocolVersion(4) // 4 - MQTT 3.1.1
+	opts.AddBroker(fmt.Sprintf("ssl://%s.azure-devices.net:8883", hub))
+	opts.SetClientID(device)
+	opts.SetUsername(fmt.Sprintf("%s.azure-devices.net/%s/api-version=2016-11-14", hub, device))
+	opts.SetPassword(sas)
 	c := mqtt.NewClient(opts)
 
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatalf("Mqtt error: %s", token.Error())
 	}
 
-	for i := 0; i < 5; i++ {
-		text := fmt.Sprintf("this is msg #%d!", i)
-		token := c.Publish("go-mqtt/sample", 0, false, text)
-		token.Wait()
-	}
+	token := c.Publish(fmt.Sprintf("devices/%s/messages/events/", device), 0, false, "{\"v\":\"gopher\"}")
+	token.Wait()
 
 	c.Disconnect(250)
 
