@@ -55,8 +55,5 @@ func generateSasToken(hostname string, deviceId string, key string, expires int6
 	sig := mac.Sum(nil)
 	hash := url.QueryEscape(base64.StdEncoding.EncodeToString(sig))
 
-	// if (policyName) token += "&skn="+policyName;
-	// TODO: policyいる？
-
 	return "SharedAccessSignature sr=" + uri + "&sig=" + hash + "&se=" + strconv.FormatInt(expires, 10)
 }
